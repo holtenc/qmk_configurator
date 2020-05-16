@@ -9,6 +9,7 @@ import keys from 'lodash/keys';
 import values from 'lodash/values';
 import * as keypress from 'keypress.js';
 
+import { longFormKeycodes } from './longFormKeycodes';
 import { backend_compile_url } from './store/modules/constants';
 
 let keypressListener;
@@ -356,12 +357,20 @@ function parseKeycode(keycode, stats) {
   keycode = stripANY(keycode);
   stats.count += 1;
 
+  // Check if the keycode is long-form or alternate
+  if (longFormKeycodes[keycode]) {
+    keycode = longFormKeycodes[keycode];
+  }
+
   // Check if the keycode is a complex/combo keycode ie. contains ()
   if (keycode.includes('(')) {
     // Pull the keycode and or layer from within the brackets
     let key, outerKeycode;
     let splitcode = keycode.split('(');
     let maincode = splitcode[0];
+    if (longFormKeycodes[maincode]) {
+      maincode = longFormKeycodes[maincode];
+    }
     let internal = splitcode[1];
     internal = internal.split(')')[0];
 
@@ -439,6 +448,7 @@ function getExclusionList() {
     '7skb',
     '8pack',
     'adkb96',
+    'ai03/equinox',
     'angel17',
     'angel64',
     'atreus',
@@ -475,6 +485,7 @@ function getExclusionList() {
     'hecomi',
     'helix',
     'ivy',
+    'jisplit89',
     'kbdfans/kbd75',
     'keebio/iris',
     'keebio/levinson',
@@ -489,13 +500,17 @@ function getExclusionList() {
     'launchpad',
     'lets_split',
     'lets_split_eh',
+    'lfkeyboards/lfk78',
     'lily58',
     'maartenwut/atom47',
     'maxipad',
     'mechllama/g35',
+    'mechlovin/hannah910',
     'mechmini',
     'meira',
     'minidox',
+    'montsinger/rebound',
+    'murcielago',
     'naked48',
     'naked60',
     'naked64',
@@ -506,6 +521,8 @@ function getExclusionList() {
     'pinky',
     'planck',
     'preonic',
+    'primekb/prime_l',
+    'projectkb/alice',
     'ps2avrGB',
     'qwertyydox',
     'redox',
@@ -521,6 +538,8 @@ function getExclusionList() {
     'treadstone48',
     'uzu42',
     'vitamins_included',
+    'yd60mq',
+    'ymd75',
     'yosino58',
     'zinc'
   ].reduce((acc, k) => {
@@ -531,14 +550,17 @@ function getExclusionList() {
 
 function compileLayout(_keyboard, _keymapName, _layout) {
   disableCompileButton();
-  var layers = store.getters['keymap/exportLayers']({ compiler: true });
-  var data = {
-    keyboard: _keyboard,
-    keymap: _keymapName,
-    layout: _layout,
-    layers: layers
-  };
-  console.log(JSON.stringify(data));
+  let template = store.state.keymap.templates.keymap;
+  const layers = store.getters['keymap/exportLayers']({ compiler: true });
+  let request = JSON.stringify(
+    Object.assign(template, {
+      keyboard: _keyboard,
+      keymap: _keymapName,
+      layout: _layout,
+      layers: layers
+    })
+  );
+  console.log(request);
   if (store.getters['status/empty']) {
     store.commit('status/append', '\n');
   }
@@ -547,7 +569,7 @@ function compileLayout(_keyboard, _keymapName, _layout) {
     `* Sending ${_keyboard}:${_keymapName} with ${_layout}`
   );
   axios
-    .post(backend_compile_url, JSON.stringify(data))
+    .post(backend_compile_url, request)
     .then(resp => {
       const { status, data } = resp;
       if (status === 200) {
@@ -594,16 +616,19 @@ function disableOtherButtons() {
  */
 function check_status() {
   const url = `${backend_compile_url}/${store.state.app.jobID}`;
+  const start = performance.now();
   axios
     .get(url)
     .then(resp => {
-      console.log(resp);
+      console.log(`response in ${performance.now() - start}ms`, resp);
       let msg;
       let { status, data } = resp;
       if (status !== 200) {
         console.log('Unexpected status', data.status);
         enableCompileButton();
       } else {
+        const pollInterval = Math.floor(2500 + Math.random() * 1000);
+        console.log(`Next Poll in ${pollInterval}ms`);
         switch (data.status) {
           case 'finished':
             store.commit('app/setSpinnerMsg', 'Done!');
@@ -631,13 +656,13 @@ function check_status() {
             store.commit('app/setSpinnerMsg', 'Waiting for Oven');
             msg = compile_status === 'queued' ? ' .' : '\n* Queueing';
             store.commit('status/append', msg);
-            setTimeout(check_status, 500);
+            setTimeout(check_status, pollInterval);
             break;
           case 'running':
             store.commit('app/setSpinnerMsg', baking);
             msg = compile_status === 'running' ? ' .' : '\n* Running';
             store.commit('status/append', msg);
-            setTimeout(check_status, 500);
+            setTimeout(check_status, pollInterval);
             break;
           case 'unknown':
             store.commit('app/setSpinnerMsg', 'Abort! Abort!');

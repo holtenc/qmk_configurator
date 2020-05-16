@@ -5,6 +5,8 @@ import reduce from 'lodash/reduce';
 import isUndefined from 'lodash/isUndefined';
 import colorways from '@/components/colorways';
 import defaults from './config';
+import axios from 'axios';
+import { backend_skeletons_url } from './constants';
 
 const state = {
   keymap: [[]], // array of arrays
@@ -23,7 +25,14 @@ const state = {
   colorwayIndex: random(0, colorways.list.length - 1),
   displaySizes: false,
   continuousInput: false,
-  ignoreMod: false
+  ignoreMod: false,
+  templates: {
+    keymap: {
+      version: 1,
+      documentation:
+        '"This file is a QMK Configurator export. You can import this at <https://config.qmk.fm>. It can also be used directly with QMK\'s source code.\n\nTo setup your QMK environment check out the tutorial: <https://docs.qmk.fm/#/newbs>\n\nYou can convert this file to a keymap.c using this command: `qmk json2c {keymap}`\n\nYou can compile this keymap using this command: `qmk compile {keymap}`"\n'
+    }
+  }
 };
 // Use for computed properties
 const getters = {
@@ -158,9 +167,29 @@ const actions = {
         type: undefined
       });
     }
+  },
+  initTemplates({ commit }) {
+    return axios
+      .get(`${backend_skeletons_url}/keymap`)
+      .then(resp => {
+        if (resp.status === 200) {
+          let template = Object.assign({}, resp.data);
+          delete template.keyboard;
+          delete template.keymap;
+          delete template.layout;
+          delete template.layers;
+          commit('setKeymapTemplate', template);
+        }
+      })
+      .catch(err => {
+        console.warn('unable to get keymap template. error:', err);
+      });
   }
 };
 const mutations = {
+  setKeymapTemplate(state, template) {
+    Vue.set(state.templates, 'keymap', template);
+  },
   setSelected(state, index) {
     state.selectedIndex = index;
     state.selectedContent = false;
@@ -286,7 +315,7 @@ const mutations = {
       KEY_X_SPACING,
       KEY_Y_SPACING
     } = state.config;
-    Vue.set(state.config, 'SCALE', (defaults.MAX_X / max.x).toFixed(3));
+    Vue.set(state.config, 'SCALE', (defaults.MAX_X / max.x).toFixed(3) * 1);
     Vue.set(state.config, 'KEY_WIDTH', (KEY_WIDTH *= state.config.SCALE));
     Vue.set(state.config, 'KEY_HEIGHT', (KEY_HEIGHT *= state.config.SCALE));
     Vue.set(
@@ -302,12 +331,12 @@ const mutations = {
     Vue.set(
       state.config,
       'KEY_X_SPACING',
-      (KEY_X_SPACING *= state.config.SCALE)
+      (KEY_X_SPACING *= state.config.SCALE).toFixed(3) * 1
     );
     Vue.set(
       state.config,
       'KEY_Y_SPACING',
-      (KEY_Y_SPACING *= state.config.SCALE)
+      (KEY_Y_SPACING *= state.config.SCALE).toFixed(3) * 1
     );
   },
   initKeymap(state, { layout, layer, code = 'KC_NO' }) {

@@ -49,6 +49,15 @@
         v-html="status"
       ></div>
       <div id="chatter-container">
+        <span v-tooltip="$t('tester.typewritericon.label')">
+          <font-awesome-icon
+            class="volume"
+            :icon="audioIcon"
+            size="lg"
+            fixed-width
+            @click="toggleAudio"
+          />
+        </span>
         <label>{{ $t('tester.chatter.label') }}:</label>
         <input
           id="chatter-threshold"
@@ -83,6 +92,7 @@ import isUndefined from 'lodash/isUndefined';
 import { mapState, mapGetters, mapMutations, mapActions } from 'vuex';
 import BaseKeymap from '@/components/BaseKeymap';
 import TesterKey from '@/components/TesterKey';
+import { Howl } from 'howler';
 
 export default {
   name: 'visual-tester-keymap',
@@ -111,13 +121,6 @@ export default {
       'activeLayoutMeta',
       'codeToPosition'
     ]),
-    styles() {
-      const styles = [];
-      styles.push(`width: ${this.width}px;`);
-      styles.push(`height: ${this.height}px;`);
-      styles.push(`font-size: ${this.fontsize * this.config.SCALE}em;`);
-      return styles.join('');
-    },
     layout: {
       get() {
         return this.$store.state.tester.layout;
@@ -168,6 +171,10 @@ export default {
       'setChatterDetected'
     ]),
     ...mapActions('tester', ['init']),
+    toggleAudio() {
+      this.audioIcon =
+        this.audioIcon === 'volume-mute' ? 'volume-up' : 'volume-mute';
+    },
     getComponent() {
       return TesterKey;
     },
@@ -215,6 +222,7 @@ export default {
       }
       ev.preventDefault();
       ev.stopPropagation();
+
       this.timingKeyDown[ev.code] = performance.now();
       const pos = this.codeToPosition[this.firefoxKeys(ev.code)];
       this.writeToStatus(
@@ -238,6 +246,10 @@ export default {
         ) {
           this.setChatterDetected({ pos });
         }
+      }
+      if (this.audioIcon !== 'volume-mute') {
+        this.sound.play(this.index[this.curIndex]);
+        this.curIndex = (this.curIndex + 1) % this.index.length;
       }
     },
     scrollToEnd() {
@@ -291,6 +303,17 @@ export default {
     }
   },
   data() {
+    const sound = new Howl({
+      src: ['typewriter-2.mp3'],
+      sprite: {
+        0: [107, 207],
+        1: [304, 270],
+        2: [646, 219],
+        3: [862, 144],
+        4: [1013, 263]
+      },
+      html5: true
+    });
     return {
       chatterThreshold: 8,
       width: 0,
@@ -301,7 +324,11 @@ export default {
       lastKey: '',
       lastCode: '',
       lastKeyCode: '',
-      displayHex: false
+      displayHex: false,
+      audioIcon: 'volume-mute',
+      curIndex: 0,
+      sound,
+      index: Object.keys(sound._sprite)
     };
   },
   components: { TesterKey }
@@ -412,5 +439,8 @@ export default {
   padding: 6px 12px;
   cursor: pointer;
   margin-bottom: 10px;
+}
+.volume {
+  margin-right: 10px;
 }
 </style>

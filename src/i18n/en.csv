@@ -12,7 +12,9 @@ searchKeycodes,search
 serverIs,Service
 serverStatus,Server Status
 settings,Settings
-statsTemplate,\nLoaded {layers} layers and {count} keycodes. Defined {any} Any key keycodes\n
+statsTemplate,"
+Loaded {layers} layers and {count} keycodes. Defined {any} Any key keycodes
+"
 ColorwayTip:title,Ctrl + Alt + N to cycle next colorway
 compile:label,Compile
 compile:title,Compile Keymap
@@ -45,6 +47,8 @@ keycodesTab:ISO/JIS:label,ISO/JIS
 keycodesTab:KeyboardSettings:label,Keyboard Settings
 keycodesTab:Quantum:label,Quantum
 keymap:label,Keymap
+keymapHelp:label,Help
+keymapHelp:title,How do I use keymap.json?
 keymapName:label,Keymap Name
 keymapName:placeholder,custom keymap name
 layer:confirm,Are you sure you want to clear layer?
@@ -127,5 +131,6 @@ tester:letters:keycode:label,keycode
 tester:page:label,Keyboard Tester
 tester:reset:label,Reset
 tester:reset:title,Reset detected keys
+tester:typewritericon:label,Click to hear typewriter sounds while testing
 toggleTerminal:label,Click to Expand
 toggleTerminal:title,Toggle the Terminal display

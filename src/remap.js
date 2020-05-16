@@ -1,4 +1,7 @@
 const lookup = {
+  'ai03/equinox': {
+    target: 'ai03/equinox/rev1'
+  },
   alice: {
     target: 'tgr/alice'
   },
@@ -44,8 +47,17 @@ const lookup = {
   'dztech/dz60rgb_wkl': {
     target: 'dztech/dz60rgb_wkl/v1'
   },
+  'dztech/dz65rgb': {
+    target: 'dztech/dz65rgb/v1'
+  },
   gh60: {
     target: 'gh60/revc'
+  },
+  idb_60: {
+    target: 'idb/idb_60',
+    layouts: {
+      LAYOUT: 'LAYOUT_all'
+    }
   },
   'kbdfans/kbd67mkiirgb': {
     target: 'kbdfans/kbd67/mkiirgb',
@@ -59,6 +71,15 @@ const lookup = {
   kudox: {
     target: 'kudox/rev1'
   },
+  'lfkeyboards/lfk78': {
+    target: 'lfkeyboards/lfk78/revj'
+  },
+  'mechlovin/hannah910': {
+    target: 'mechlovin/hannah910/rev1'
+  },
+  'montsinger/rebound': {
+    target: 'montsinger/rebound/rev1'
+  },
   'noxary/268_2': {
     layouts: {
       LAYOUT: 'LAYOUT_65_ansi_blocker'
@@ -71,6 +92,15 @@ const lookup = {
   },
   plain60: {
     target: 'maartenwut/plain60'
+  },
+  'primekb/prime_l': {
+    target: 'primekb/prime_l/v1'
+  },
+  'primekb/prime_l_v2': {
+    target: 'primekb/prime_l/v2'
+  },
+  'projectkb/alice': {
+    target: 'projectkb/alice/rev1'
   },
   'rama/koyu': {
     target: 'wilba_tech/rama_works_koyu'
@@ -115,6 +145,15 @@ const lookup = {
   },
   wasdat: {
     target: 'maartenwut/wasdat'
+  },
+  'westfoxtrot/cypher': {
+    target: 'westfoxtrot/cypher/rev1'
+  },
+  yd60mq: {
+    target: 'yd60mq/12led'
+  },
+  ymd75: {
+    target: 'ymd75/rev1'
   },
   zeal60: {
     target: 'wilba_tech/zeal60'

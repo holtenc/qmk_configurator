@@ -6,17 +6,21 @@
       <controllerBottom />
     </div>
     <div class="hint hint-right">
-      <a target="_blank" href="https://github.com/qmk/qmk_toolbox/releases">
-        {{ $t('downloadToolbox.label') }}
-      </a>
+      <a
+        href="https://github.com/qmk/qmk_toolbox/releases"
+        v-tooltip="$t('downloadToolbox.label')"
+        target="_blank"
+        rel="noopener"
+        >{{ $t('downloadToolbox.label') }}</a
+      >
     </div>
     <div class="split-content">
       <div class="left-side">
         <layerControl />
       </div>
       <div class="right-side">
-        <p>
-          <label class="keymap--label" :title="$t('ColorwayTip.title')">
+        <div class="keymap--area">
+          <label class="keymap--label" v-tooltip="$t('ColorwayTip.title')">
             {{ $t('keymap.label') }}:
             <font-awesome-icon
               v-if="continuousInput"
@@ -41,7 +45,7 @@
           </select>
           <a
             id="favorite-colorway"
-            :title="$t('favoriteColor')"
+            v-tooltip="$t('favoriteColor')"
             @click="favColor"
             :class="{
               active: isFavoriteColor
@@ -49,7 +53,7 @@
           >
             <font-awesome-icon icon="star" size="lg" fixed-width />
           </a>
-        </p>
+        </div>
         <visualKeymap :profile="false" />
         <span class="keymap--count"
           ><span class="keymap--counter">{{ keyCount }}</span
@@ -187,5 +191,10 @@ export default {
 }
 .keymap--keyset {
   float: right;
+}
+.keymap--area {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  height: 1.5em;
 }
 </style>

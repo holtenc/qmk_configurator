@@ -1,6 +1,7 @@
 @import './scss/qmk_colors';
 @import './scss/themes';
 @import './scss/status-bar';
+@import './scss/tooltip.scss';
 
 /*
 TO REFACTOR: import of style.css
@@ -257,7 +258,8 @@ a img {
 #leavePrint,
 #leaveTest,
 #resetTest,
-#load-default {
+#load-default,
+.ui-button {
   line-height: 120%;
   border-radius: 3px;
   // background-color: #49ad4c;
@@ -390,7 +392,7 @@ button {
 
 .botctrl {
   display: grid;
-  grid-template: auto / 34fr 5fr;
+  grid-template: auto / 17fr 6fr;
   grid-row-gap: 5px;
 }
 
@@ -588,6 +590,7 @@ button {
 
 .key-layer-input {
   width: 24px;
+  min-width: 24px;
   height: 24px;
   border-radius: 2px;
   border: 1px solid;
@@ -597,6 +600,18 @@ button {
   -webkit-box-sizing: border-box;
   padding: 1px;
   text-align: center;
+  transition: width 100ms ease-out;
+  &:focus {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -7px);
+    z-index: 2;
+    transition: width 0ms linear;
+  }
+}
+.key-layer-title-focus {
+  padding-bottom: 24px;
 }
 
 #keycodes {

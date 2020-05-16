@@ -111,8 +111,6 @@ export default {
       }
       if (this.meta && this.meta.name.length >= 2) {
         classes.push('smaller');
-      } else {
-        classes.push('thicker');
       }
       const { KEY_WIDTH, KEY_HEIGHT } = this.config;
       if (!isUndefined(this.meta) && !this.printable) {
@@ -155,6 +153,7 @@ export default {
       if (this.x > 0) {
         styles.push(`left: ${this.x}px;`);
       }
+
       return styles.join('');
     }
   },
@@ -260,11 +259,12 @@ export default {
   transform: scale(0.8);
 }
 .key.smaller {
-  font-size: 0.61rem;
+  font-size: var(--default-smaller-key-font-size);
 }
 .key {
   border-radius: 6px;
   font-family: 'Montserrat', sans-serif;
+  font-size: var(--default-key-font-size);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 120%;
